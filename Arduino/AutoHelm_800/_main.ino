@@ -1,10 +1,19 @@
-
+#ifdef AH_KEYPAD
+AHKeypad* keyboard = new AHKeypad();
+#else 
 Keyboard* keyboard = new Keyboard();
-Cylinder* cylinder = new Cylinder();
+#endif
+
+DRV8871* cylinder = new DRV8871();
+// Max471* max471 = new Max471();
+// AHServer* ahServer = new AHServer();
 enum Mode {MODE_AUTO, MODE_STANDBY, MODE_GOTO, MODE_NONE};
 
 void setup() {
   Serial.begin(9600);
+  Serial.println();
+  Serial.println("Autopilot V0");  
+  keyboard->debug();
 }
 
 int delta(int c, int h){
@@ -23,6 +32,7 @@ int delta(int c, int h){
   }
 }
 
+float alpha=0;     // used for simulation.
 int heading = 0;   // heading direction in degrees
 Mode mode = MODE_NONE;
 
@@ -37,29 +47,31 @@ void loop() {
       break;
     case KEY_STANDBY :
       mode = MODE_STANDBY;
+      alpha=0;
       heading = 0;
       break;
     case KEY_PLUSONE :
-      heading += 1;
-      break;
-    case KEY_MINUSONE :
-      heading -= 1;
-      break;
-    case KEY_PLUSTEN : 
       heading += 10;
       break;
-    case KEY_MINUSTEN :
+    case KEY_MINUSONE :
       heading -= 10;
+      break;
+    case KEY_PLUSTEN : 
+      heading = 180;
+      break;
+    case KEY_MINUSTEN :
+      heading = -180;
       break;
   }
   // recale entre 0 et 360°
-  //if(heading<0)   heading += 360;
-  //if(heading>360) heading -= 360;
+  if(heading<0)   heading += 360;
+  if(heading>360) heading -= 360;
   
-  if(heading>180) heading = 180;
-  if(heading<-180) heading = -180;
+  //if(heading>180) heading = 180;
+  //if(heading<-180) heading = -180;
   
 if(key != KEY_NONE){
+  #ifdef KEYPAD_DEBUG
   Serial.println();
   Serial.print("KEY :");
   Serial.print((char)key);
@@ -67,19 +79,28 @@ if(key != KEY_NONE){
   Serial.print(mode);
   Serial.print(",Heading :");
   Serial.print(heading);
-  cylinder->move(heading);
+  Serial.print(",Compass :");
+  Serial.print(compass);  
+  #endif
 }
 
-  /*
+
   switch(mode){
     case MODE_AUTO :
-      cylinder_move(delta(compass,heading));
+      alpha +=.05;
+      compass = sin(alpha)*180;
+      cylinder->move(delta(compass,heading));
       break;
     case MODE_STANDBY : 
-      cylinder_move(delta(compass,heading));
+      compass = 0;
+      cylinder->move(delta(compass,heading));
       // heading = 0;
       break;
+    case MODE_NONE:
+      cylinder->move(delta(0,heading));
   }
-  */
+
+  cylinder->loop();
+  // max471->loop();
   delay(100);
 }

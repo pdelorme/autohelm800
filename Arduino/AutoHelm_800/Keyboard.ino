@@ -1,45 +1,72 @@
+#ifdef MY_KEYBOARD
+
 #define LED 13       // orange
 #define ONE_KEYS 12  // yellow
 #define TEN_KEYS 14  // green
 #define COM_KEYS 27  // blue
 
-void keyboard_setup(){
-    pinMode(LED, OUTPUT);
-}
+enum AHKey {
+  KEY_PLUSONE  = '+', 
+  KEY_MINUSONE = '-', 
+  KEY_PLUSTEN  = '*',
+  KEY_MINUSTEN = '/', 
+  KEY_AUTO     = 'A', 
+  KEY_STANDBY  = 'S', 
+  KEY_NONE     = '\0'
+};
 
-void setLed(boolean isOn){
-  if(isOn) {
-    digitalWrite(LED, LOW);
-  } else {
-    digitalWrite(LED, HIGH);
-  }
-}
+class Keyboard{
+  private:
+    AHKey prevKey = KEY_NONE;
+    
+    AHKey readKey(int gpio, AHKey lowKey, AHKey highKey){
+      int value = analogRead(gpio);
+      /*if(value!=0) {
+        Serial.print(":");
+        Serial.print(value);
+      }
+      */
+      if(value< 100) return KEY_NONE;
+      if(value<1500) return lowKey;
+      return highKey;
+    }
 
-Key readKey(int gpio, Key lowKey, Key highKey){
-  int value = analogRead(gpio);
-  Serial.print(":");
-  Serial.print(value);
-  Serial.print(":");
-  if(value< 100) return KEY_NONE;
-  if(value<1500) return lowKey;
-  return highKey;
-}
+    void setLed(boolean isOn){
+      if(isOn) {
+        digitalWrite(LED, LOW);
+      } else {
+        digitalWrite(LED, HIGH);
+      }
+    }
+  
+  public:
+    Keyboard(){
+      pinMode(LED, OUTPUT);
+    }
 
-Key getKey(){
-  Key oneKey = readKey(ONE_KEYS, KEY_PLUSONE, KEY_MINUSONE);
-  Key tenKey = readKey(TEN_KEYS, KEY_PLUSTEN, KEY_MINUSTEN);  
-  Key comKey = readKey(COM_KEYS, KEY_AUTO, KEY_STANDBY);
-  setLed(oneKey!=KEY_NONE || tenKey!=KEY_NONE || comKey!=KEY_NONE);
-/*
-  Serial.print("ONE :");
-  Serial.print(oneKey);
-  Serial.print(", TEN :");
-  Serial.print(tenKey);
-  Serial.print(", COM :");
-  Serial.print(comKey);
-  Serial.print(" / ");
-*/
-  if(oneKey != KEY_NONE) return oneKey;
-  if(tenKey != KEY_NONE) return tenKey;
-  return comKey;
-}
+    /**
+     * return the key pressed.
+     * if key remain pressed, it will be returned only once.
+     */
+    AHKey getKey(){
+      AHKey oneKey = readKey(ONE_KEYS, KEY_PLUSONE, KEY_MINUSONE);
+      AHKey tenKey = readKey(TEN_KEYS, KEY_PLUSTEN, KEY_MINUSTEN);  
+      AHKey comKey = readKey(COM_KEYS, KEY_AUTO, KEY_STANDBY);
+      AHKey pressedKey = KEY_NONE;
+      if(oneKey != KEY_NONE) pressedKey = oneKey;
+      if(tenKey != KEY_NONE) pressedKey = tenKey;
+      if(comKey != KEY_NONE) pressedKey = comKey;
+      setLed(pressedKey !=KEY_NONE);
+      AHKey returnedKey = KEY_NONE;
+      if(pressedKey!=prevKey){
+        returnedKey=pressedKey;
+      }
+      prevKey=pressedKey;
+      return returnedKey;
+    }
+
+    void debug(){
+      Serial.println("My Keyboard");
+    }
+};
+#endif

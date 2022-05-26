@@ -1,7 +1,7 @@
 
 AHKeypad* keyboard;
 DRV8871*  cylinder;
-ACS712*   current;
+//ACS712*   current;
 INA219*   current2;
 // AHServer* ahServer = new AHServer();
 enum Mode {MODE_AUTO, MODE_STANDBY, MODE_GOTO, MODE_NONE};
@@ -13,7 +13,7 @@ void setup() {
   keyboard = new AHKeypad();
   keyboard->debug();
   cylinder = new DRV8871();
-  current  = new ACS712();
+//  current  = new ACS712();
   current2 = new INA219();
 }
 
@@ -100,7 +100,9 @@ void loop() {
       cylinder->move(delta(0,heading));
   }
   
-  //current->loop();
-  current2->loop();
+  // cylinder->loop();
+  // current->loop();
+  // current2->loop();
+  Serial.println();
   delay(100);
 }

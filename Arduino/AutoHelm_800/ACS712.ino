@@ -73,11 +73,11 @@ class ACS712 {
         //Serial.print (raw);
         //Serial.print (" C");
         //Serial.print ("\t"); Serial.print (V); Serial.print (" V");
-        Serial.print ("\t"); Serial.print (A); Serial.print (" A_PIN");
-        Serial.print ("\t"); Serial.print (avg); Serial.print (" Avg");
-        Serial.print ("\t"); Serial.print (maxi); Serial.print (" Max");
-        Serial.print ("\t"); Serial.print (sup); Serial.print (" Sup");
-        Serial.print ("\t"); Serial.print (2); Serial.print (" trigger");
+        Serial.print ("\t A_PIN :"); Serial.print (A);
+        Serial.print ("\t AVG :"); Serial.print (avg);
+        Serial.print ("\t MAX :"); Serial.print (maxi);
+        Serial.print ("\t SUP :"); Serial.print (sup);
+        Serial.print ("\t TRIG :"); Serial.print (2);
       #endif
       return avg;
     }

@@ -16,22 +16,44 @@
 
 class DRV8871 {
   private:
-    void left(int dutyCycle){
+    // end stop current sensor
+    ACS712*   current;
+    int lastDir = 0; // -1 = left, 1=right
+    boolean locked = false;
+
+    /**
+     * Move id=n direction except if lockeded by endStop
+     */
+    void doMove(int dir){
+      if(dir!=0){
+        if(locked && dir == lastDir){
+          return;
+        }
+        lastDir=dir;
+        if(endStop()) {
+          dir=0;
+        }
+      }
       #ifdef DRV8871_DEBUG
-      Serial.print("-");
-      Serial.println(dutyCycle);
+        Serial.print(dir<0?"-":(dir>0?"+":"0"));
       #endif
-      ledcWrite(DRV8871_PWMCHANNEL1, MAX_DUTY_CYCLE);
-      ledcWrite(DRV8871_PWMCHANNEL2, 0);
+      ledcWrite(DRV8871_PWMCHANNEL1, dir<0?MAX_DUTY_CYCLE:0);
+      ledcWrite(DRV8871_PWMCHANNEL2, dir>0?MAX_DUTY_CYCLE:0);
+      if(dir!=0){
+        locked=false;
+      }
     }
-    
-    void right(int dutyCycle){
-      #ifdef DRV8871_DEBUG
-      Serial.print("+");
-      Serial.println(dutyCycle);
-      #endif
-      ledcWrite(DRV8871_PWMCHANNEL1, 0);
-      ledcWrite(DRV8871_PWMCHANNEL2, MAX_DUTY_CYCLE);
+
+    /**
+     * stops if end stop reached.
+     * returntrue is motor has been stopped.
+     */
+    boolean endStop(){
+      if(current->readAmp()>2){
+        locked=true;
+        return true;
+      }
+      return false;
     }
     
     int dutyCycle;
@@ -46,23 +68,29 @@ class DRV8871 {
       // IN2
       ledcSetup(DRV8871_PWMCHANNEL2, DRV8871_PWMFREQ, DRV8871_PWMRESOLUTION);
       ledcAttachPin(DRV8871_IN2, DRV8871_PWMCHANNEL2);
+      // init current sensor
+      current  = new ACS712();
    }
 
     void loop(){
-    }
-    
-    void move(int degree){
-      if(degree==0) {
-        stop();
-        return;
-      }
-      if(degree<0) left(map(-degree, 0, 180, MIN_DUTY_CYCLE, MAX_DUTY_CYCLE));
-      else right(map(degree, 0, 180, MIN_DUTY_CYCLE, MAX_DUTY_CYCLE)); 
+      endStop();
     }
 
+    void left(){
+      return doMove(-1);
+    }
+
+    void right(){
+      return doMove(1);
+    }
+
+    void move(int dir){
+      doMove(dir);
+    }
     void stop(){
-      ledcWrite(DRV8871_PWMCHANNEL1, 0);
-      ledcWrite(DRV8871_PWMCHANNEL2, 0);
+      return doMove(0);
+      //ledcWrite(DRV8871_PWMCHANNEL1, 0);
+      //ledcWrite(DRV8871_PWMCHANNEL2, 0);
     }
 
 };

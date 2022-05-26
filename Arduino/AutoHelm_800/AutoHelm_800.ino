@@ -1,7 +1,8 @@
 //#define MAX471_DEBUG
-#define L298N_DEBUG
-#define KEYPAD_DEBUG
-#define DRV8871_DEBUG
-// #include "Types.h"
-//#define MY_KEYBOARD
-#define AH_KEYPAD
+//#define L298N_DEBUG
+//#define KEYPAD_DEBUG
+//#define DRV8871_DEBUG
+#define ACS712_DEBUG
+// ESP32_WROOM_DEVKIT
+// ESP32_LOLIN32_LITE
+#define ARCH ESP32_WROOM_DEVKIT

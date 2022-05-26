@@ -1,11 +1,8 @@
-#ifdef AH_KEYPAD
-AHKeypad* keyboard = new AHKeypad();
-#else 
-Keyboard* keyboard = new Keyboard();
-#endif
 
-DRV8871* cylinder = new DRV8871();
-// Max471* max471 = new Max471();
+AHKeypad* keyboard;
+DRV8871*  cylinder;
+ACS712*   current;
+INA219*   current2;
 // AHServer* ahServer = new AHServer();
 enum Mode {MODE_AUTO, MODE_STANDBY, MODE_GOTO, MODE_NONE};
 
@@ -13,7 +10,11 @@ void setup() {
   Serial.begin(9600);
   Serial.println();
   Serial.println("Autopilot V0");  
+  keyboard = new AHKeypad();
   keyboard->debug();
+  cylinder = new DRV8871();
+  current  = new ACS712();
+  current2 = new INA219();
 }
 
 int delta(int c, int h){
@@ -70,20 +71,19 @@ void loop() {
   //if(heading>180) heading = 180;
   //if(heading<-180) heading = -180;
   
-if(key != KEY_NONE){
-  #ifdef KEYPAD_DEBUG
-  Serial.println();
-  Serial.print("KEY :");
-  Serial.print((char)key);
-  Serial.print(",MODE :");
-  Serial.print(mode);
-  Serial.print(",Heading :");
-  Serial.print(heading);
-  Serial.print(",Compass :");
-  Serial.print(compass);  
-  #endif
-}
-
+  if(key != KEY_NONE){
+    #ifdef KEYPAD_DEBUG
+    Serial.println();
+    Serial.print("KEY :");
+    Serial.print((char)key);
+    Serial.print(",MODE :");
+    Serial.print(mode);
+    Serial.print(",Heading :");
+    Serial.print(heading);
+    Serial.print(",Compass :");
+    Serial.print(compass);  
+    #endif
+  }
 
   switch(mode){
     case MODE_AUTO :
@@ -99,8 +99,8 @@ if(key != KEY_NONE){
     case MODE_NONE:
       cylinder->move(delta(0,heading));
   }
-
-  cylinder->loop();
-  // max471->loop();
+  
+  //current->loop();
+  current2->loop();
   delay(100);
 }

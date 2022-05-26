@@ -1,11 +1,23 @@
-#ifdef AH_KEYPAD
+/**
+ * Autohelm 800 Keypad
+ */
 #include <Keypad.h>
-#define LED 13       // orange
-#define ONE_KEYS 12  // yellow
-#define TEN_KEYS 14  // green
-#define COM_KEYS 27  // blue
-#define LEFT_KEYS 25 // red
-#define RIGHT_KEYS 26 // brown
+#if ARCH == ESP32_WROOM_DEVKIT
+  #define LED 2         // orange
+  #define COM_KEYS 16   // yellow
+  #define TEN_KEYS 4    // green
+  #define ONE_KEYS 0    // blue
+  #define LEFT_KEYS 5   // red
+  #define RIGHT_KEYS 17 // brown
+#elif ARCH == ESP32_LOLIN_LITE
+  #define LED 13        // orange
+  #define ONE_KEYS 12   // yellow
+  #define TEN_KEYS 14   // green
+  #define COM_KEYS 27   // blue
+  #define LEFT_KEYS 25  // red
+  #define RIGHT_KEYS 26 // brown
+#endif
+
 
 
 enum AHKey {
@@ -47,4 +59,3 @@ class AHKeypad {
       Serial.println("AH Keypad");
     }
 };
-#endif

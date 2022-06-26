@@ -1,3 +1,4 @@
+#include <arduino.h>
 /**
  * ACS712 Current Sensor
  */

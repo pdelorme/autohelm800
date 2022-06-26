@@ -1,3 +1,4 @@
+#include <arduino.h>
 /**
  * Cylinder controle using L298N
  */
@@ -7,6 +8,7 @@
 #define L298N_PWMCHANNEL 0
 #define L298N_PWMFREQ    10000 // 5 KHz
 #define L298N_PWMRESOLUTION 8
+
 class L298N {
   private:
     void left(int dutyCycle){
@@ -37,8 +39,8 @@ class L298N {
 
     int dutyCycle;
     /* Setting PWM Properties */
-    static const int MAX_DUTY_CYCLE = (int)(pow(2, L298N_PWMRESOLUTION) - 1);
-    static const int MIN_DUTY_CYCLE = MAX_DUTY_CYCLE*3/4;
+    int MAX_DUTY_CYCLE = (int)(pow(2, L298N_PWMRESOLUTION) - 1);
+    int MIN_DUTY_CYCLE = MAX_DUTY_CYCLE*3/4;
   public:
     L298N(){
       pinMode(L298N_IN1, OUTPUT);

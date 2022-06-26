@@ -1,9 +1,21 @@
+//#define MAX471_DEBUG
+//#define L298N_DEBUG
+//#define KEYPAD_DEBUG
+//#define DRV8871_DEBUG
+#define ACS712_DEBUG
+// ESP32_WROOM_DEVKIT
+// ESP32_LOLIN32_LITE
+#define ARCH ESP32_WROOM_DEVKIT
+
+#include <arduino.h>
+#include "AHKeypad.cpp"
+#include "DRV8871.cpp"
+#include "AHServer.cpp"
+#include "MPU9250.cpp"
 
 AHKeypad* keyboard;
 DRV8871*  cylinder;
-//ACS712*   current;
-INA219*   current2;
-// AHServer* ahServer = new AHServer();
+AHServer* ahServer;
 enum Mode {MODE_AUTO, MODE_STANDBY, MODE_GOTO, MODE_NONE};
 
 void setup() {
@@ -13,8 +25,7 @@ void setup() {
   keyboard = new AHKeypad();
   keyboard->debug();
   cylinder = new DRV8871();
-//  current  = new ACS712();
-  current2 = new INA219();
+  ahServer = new AHServer();
 }
 
 int delta(int c, int h){
@@ -102,7 +113,6 @@ void loop() {
   
   // cylinder->loop();
   // current->loop();
-  // current2->loop();
-  Serial.println();
+  // Serial.println();
   delay(100);
 }

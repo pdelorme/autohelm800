@@ -1,17 +1,19 @@
+#include <Arduino.h>
 #include <WiFi.h>
+// #include <FS.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include "SPIFFS.h"
-
-// Replace with your network credentials
-const char* SP_ssid = "AUTO_PILOT";
-const char* SP_password = "1234567890";
-
-AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
+#include <ArduinoOTA.h>
 
 class AHServer {
   private:
+    AsyncWebServer server = AsyncWebServer(80);
+    AsyncWebSocket ws = AsyncWebSocket("/ws");
+
+    // Replace with your network credentials
+    const char* SP_ssid = "AUTO_PILOT";
+    const char* SP_password = "1234567890";
     /**
      * initialize wifi Access Point.
      */
@@ -41,11 +43,15 @@ class AHServer {
       server.on("/info", HTTP_GET, [](AsyncWebServerRequest *request){
         request->send(200, "text/plain", "HELLO OCEAN");
       });
-    
-      // init ws
-      ws.onEvent(onEvent);
-      server.addHandler(&ws);
+
+
+      // // init ws
+      // ws.onEvent(onEvent);
+      // server.addHandler(&ws);
+
       Serial.println("starting WebServer");
+      // OTA server
+      ArduinoOTA.begin();
       // Start server
       server.begin();
     }
@@ -56,6 +62,7 @@ class AHServer {
     }
   
   void loop(){
+     ArduinoOTA.handle();
   }
 
 };

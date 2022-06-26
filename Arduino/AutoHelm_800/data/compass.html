@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Star Pointer Server</title>
+  <meta name="description" content="AutoHelm 800 Administration Page">
+  <meta name="author" content="Patrice Delorme">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css"> -->
+  <link rel="stylesheet" href="normalize.css">
+  <link rel="stylesheet" href="skeleton.css">
+  <link href="style.css" rel="stylesheet">
+  <link href="tabs.css" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <script language="javascript" type="text/javascript" src="two.js"></script>
+</head>
+<body>
+</body>
+<script type="text/javascript">
+	// Make an instance of two and place it on the page.
+	var params = {
+		fullscreen: true
+	};
+	var elem = document.body;
+	var two = new Two(params).appendTo(elem);
+    var cap = 32;
+	var route = 350;
+	// Two.js has convenient methods to make shapes and insert them into the scene.
+	var radius = Math.min(two.width,two.height)/2*0.8;
+	var centerx = two.width * 0.5;
+	var centery = two.height * 0.5;
+	
+	function update() {
+		cap+=Math.round(Math.random()*2-1.1);
+		if(cap<0) cap+=360;
+		if(cap>360) cap-=360;
+		route+=Math.round(Math.random()*2-1.1);
+		if(route<0) route+=360;
+		if(route>360) route-=360;
+		drawCompass(cap, route);
+		// Don’t forget to tell two to draw everything to the screen
+	}
+	two.bind('update', function(frameCount) {
+		update();
+	}).play();
+
+	function drawCompass(cap, route){
+
+		// compass
+		var outterCircle = two.makeCircle(centerx, centery, radius);
+		var innerCircle = two.makeCircle(centerx, centery, radius*0.8);
+		outterCircle.fill = '#FF8000';
+		outterCircle.stroke = 'orangered';
+		outterCircle.linewidth = 5;
+		innerCircle.stroke = 'orangered';
+		innerCircle.linewidth = 5;
+		innerCircle.fill = 'white';
+		const styles = {
+			family: 'proxima-nova, sans-serif',
+			size: radius*0.15,
+			leading: 50,
+			weight: 600
+		};
+		for(var i = 0; i<360 ; i+=30){
+			var alpha = (i-cap)*Math.PI/180;
+			var x = Math.sin(alpha)*radius;
+			var y = -Math.cos(alpha)*radius;
+			var line = two.makePath(x * 0.95 + centerx, y * 0.95 + centery, x * 0.99 + centerx, y * 0.99 + centery);
+			line.stroke = 'white';
+			line.linewidth = 5;
+			const text = two.makeText(i, x  * 0.87 + centerx, y * 0.87 + centery, styles);
+			text.fill = 'white'
+			text.rotation = alpha;
+		}
+
+		// route
+		var alpha = (route-cap)*Math.PI/180;
+		var x = Math.sin(alpha)*radius;
+		var y = -Math.cos(alpha)*radius;
+		var line = two.makePath(x * 0.2 + centerx, y * 0.2 + centery, x * 0.99 + centerx, y * 0.99 + centery);
+		line.stroke = 'blue';
+		line.linewidth = 5;
+
+		// boat
+		var boat = two.makePath(-5, 5, -1, -9, 0 , -10, 1, -9, 5, 5);
+		boat.translation.x=centerx;
+		boat.translation.y=centery;
+		boat.scale=radius/10*0.8;
+		boat.linewidth=.2;
+		boat.curved=true;
+		boat.closed=false;
+		boat.fill = '#FF8000';
+		boat.stroke= "orangered";
+		var boat2 = two.makePath(-5, 5, 0 , 0, 5, 5);
+		boat2.translation.x=centerx;
+		boat2.translation.y=centery+radius/2.5;
+		boat2.scale=radius/10*0.8;
+		boat2.linewidth=.1;
+		boat2.curved=true;
+		boat2.closed=false;
+		boat2.stroke= "orangered";
+		boat2.linewidth=.2;
+		const capText = two.makeText(cap.toFixed(), centerx, centery, styles);
+		const routeText = two.makeText(route.toFixed(), centerx, centery - radius/3, styles);
+		routeText.fill = "blue";
+
+	}
+  </script>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Star Pointer Server</title>
+  <meta name="description" content="AutoHelm 800 Administration Page">
+  <meta name="author" content="Patrice Delorme">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css"> -->
+  <link rel="stylesheet" href="normalize.css">
+  <link rel="stylesheet" href="skeleton.css">
+  <link href="style.css" rel="stylesheet">
+  <link href="tabs.css" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <script language="javascript" type="text/javascript" src="geotracking.js"></script>
+  <script type="text/javascript">
+	function init() {
+		init_logger();
+		document.getElementById("defaultOpen").click();
+		geo_init();
+	}
+  </script>
+</head>
+<body onload="init()">
+<div class="container">
+	<div class="row">
+		<h1>Autohelm 800 Server</h1>
+	</div>
+	<div id="logger" class="web_console"></div>
+	<button class="button" onclick="geo_init()">Refresh</button>
+	<div class="row">
+		<div class="one-half column inline">
+	  		<label>Position : </label> <span id="position_name">xx</span> [lat:<span id="position_lat">xx</span>, lon:<span id="position_lon"></span>]
+	  	</div>
+	  	<div class="one-half column inline">
+	  	    <label>Time : </label><span id="time">tt</span>
+	    </div>
+	</div>
+	<div class="row">
+		<div class="one-half column inline">
+	  	<label>Target : </label><span id="target_name"></span>
+	  </div>
+	  <div class="one-half column inline">
+	    <label>EQ coordinate : </label>RA=<span id="target_ra"></span>, DEC=<span id="target_dec"></span>
+	  </div>
+	</div>
+	<div class="row"> 
+		<!-- Tab links -->
+		<div class="tab">
+		  <button class="button tablinks" onclick="openTab(event, 'Configure')" id="defaultOpen">Configure</button>
+		  <button class="button tablinks" onclick="openTab(event, 'Calibrate')">Calibrate</button>
+		  <button class="button tablinks" onclick="openTab(event, 'Goto')">Go To</button>
+		</div>
+	</div>
+	<!-- Tab content -->
+	<div id="Configure" class="row tabcontent">
+	</div>
+
+	<!-- Tab content -->
+	<div id="Calibrate" class="row tabcontent">
+	</div>
+
+	<!-- Tab content -->
+	<div id="Goto" class="row tabcontent">
+</div>
+<script type="text/javascript">
+  	// var mySocket = new WebSocket("ws://" + window.location.host +"/ws");
+    // mySocket.onopen = function (event) {
+    //   const date = new Date();
+	//   mySocket.send("TIME:"+date.toISOString());
+	// };
+
+    // mySocket.onmessage = function (event) {
+    //   const data = JSON.parse(event.data);
+	//   document.getElementById("time").textContent = data.time;
+	//   console.log(data);
+	// };
+
+	function openTab(evt, tabName) {
+			// Declare all variables
+			var i, tabcontent, tablinks;
+
+			// Get all elements with class="tabcontent" and hide them
+			tabcontent = document.getElementsByClassName("tabcontent");
+	  	for (i = 0; i < tabcontent.length; i++) {
+	    	tabcontent[i].style.display = "none";
+	  	}
+
+	  	// Get all elements with class="tablinks" and remove the class "active"
+	  	tablinks = document.getElementsByClassName("tablinks");
+	 	for (i = 0; i < tablinks.length; i++) {
+	    	tablinks[i].className = tablinks[i].className.replace(" active", "");
+	  	}
+
+	  	// Show the current tab, and add an "active" class to the button that opened the tab
+	  	document.getElementById(tabName).style.display = "block";
+	  	evt.currentTarget.className += " active";
+	}
+</script>
+</body>
+</html>

@@ -2,6 +2,7 @@
  * Autohelm 800 Keypad
  */
 #include <Keypad.h>
+
 #if ARCH == ESP32_WROOM_DEVKIT
   #define LED 2         // orange
   #define COM_KEYS 16   // yellow
@@ -17,8 +18,6 @@
   #define LEFT_KEYS 25  // red
   #define RIGHT_KEYS 26 // brown
 #endif
-
-
 
 enum AHKey {
   KEY_PLUSONE  = '+', 

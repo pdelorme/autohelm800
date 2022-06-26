@@ -1,3 +1,4 @@
+#include <arduino.h>
 /**
  * MAX471 Current Sensor
  */
@@ -15,7 +16,7 @@
 class Max471 {
   private:
   public:
-    Max471 () {
+    Max471(){
       pinMode (MAX471_VOLT_PIN, INPUT);
       pinMode (MAX471_AMP_PIN, INPUT);
     }

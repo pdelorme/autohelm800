@@ -13,3 +13,6 @@ li {
 .inline {
 	display:flex;
 }
+.container .row H1 {
+    text-align: center;
+}

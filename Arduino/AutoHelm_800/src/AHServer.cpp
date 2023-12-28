@@ -18,11 +18,15 @@ class AHServer {
      * initialize wifi Access Point.
      */
     void setupWifiAP(){
-      Serial.println("SettingUp AccessPoint");
+      #ifdef AHSERVER_DEBUG
+        Serial.println(" SettingUp AccessPoint");
+      #endif
       WiFi.softAP(SP_ssid, SP_password);
       IPAddress IP = WiFi.softAPIP();
-      Serial.print("AP IP address: ");
-      Serial.println(IP);
+      #ifdef AHSERVER_DEBUG
+        Serial.print("   AP IP address: ");
+        Serial.println(IP);
+      #endif
     }
 
     static void onEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type,
@@ -30,10 +34,12 @@ class AHServer {
               
     }
     void setupWebServer(){
-      Serial.println("Setting up WebServer");
+      #ifdef AHSERVER_DEBUG
+        Serial.println(" Setting up WebServer");
+      #endif
       // Launch SPIFFS file system | Démarre le système de fichier SPIFFS 
       if(!SPIFFS.begin()){ 
-        Serial.println("An Error has occurred while mounting SPIFFS");  
+        Serial.println("  An Error has occurred while mounting SPIFFS");  
       }
     
       // static file server
@@ -49,7 +55,9 @@ class AHServer {
       // ws.onEvent(onEvent);
       // server.addHandler(&ws);
 
-      Serial.println("starting WebServer");
+      #ifdef AHSERVER_DEBUG
+        Serial.println(" Starting WebServer");
+      #endif
       // OTA server
       ArduinoOTA.begin();
       // Start server
@@ -57,6 +65,12 @@ class AHServer {
     }
   public:
     AHServer(){
+      Serial.print("init WebServer. DEbUG=");
+      #ifdef AHSERVER_DEBUG
+        Serial.println("yes");
+      #else
+        Serial.println("no");
+      #endif
       setupWifiAP();
       setupWebServer();
     }

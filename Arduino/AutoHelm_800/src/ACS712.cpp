@@ -4,7 +4,7 @@
  */
 
 #if ARCH == ESP32_WROOM_DEVKIT
-  #define ACS712_AMP_PIN 35 // yellow
+  #define ACS712_AMP_PIN 13 // yellow
 #elif ARCH == ESP32_LOLIN_LITE
   #define ACS712_AMP_PIN 34 // yellow
 #endif

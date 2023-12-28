@@ -1,4 +1,5 @@
 #include <arduino.h>
+#include <Endstops.h>
 /**
  * DRV8871 HBridge Driver.
  */ 
@@ -15,12 +16,11 @@
 #define DRV8871_PWMRESOLUTION 8
 #include "ACS712.cpp"
 
+
 class DRV8871 {
   private:
-    // end stop current sensor
-    ACS712*   current;
+    Endstops* endstops;
     int lastDir = 0; // -1 = left, 1=right
-    boolean endStopped = false;
 
     /**
      * Move id=n direction except if lockeded by endStop
@@ -28,33 +28,13 @@ class DRV8871 {
     void doMove(int dir){
       if(dir!=0){
         dir=dir>0?+1:-1;
-        if(endStopped && dir == lastDir){
-          return;
-        }
-        lastDir=dir;
-        if(checkEndStop()) {
+        if(endstops->getStop() == dir){
           dir=0;
-        } else {
-          endStopped=false;
         }
       }
-      #ifdef DRV8871_DEBUG
-        Serial.print(dir<0?"-":(dir>0?"+":"0"));
-      #endif
+      debug(dir);
       ledcWrite(DRV8871_PWMCHANNEL1, dir<0?MAX_DUTY_CYCLE:0);
       ledcWrite(DRV8871_PWMCHANNEL2, dir>0?MAX_DUTY_CYCLE:0);
-    }
-
-    /**
-     * stops if end stop reached.
-     * returntrue is motor has been stopped.
-     */
-    boolean checkEndStop(){
-      if(current->readAmp()>2.2){
-        endStopped=true;
-        return true;
-      }
-      return false;
     }
     
     int dutyCycle;
@@ -62,20 +42,35 @@ class DRV8871 {
     int MAX_DUTY_CYCLE = (int)(pow(2, DRV8871_PWMRESOLUTION) - 1);
     int MIN_DUTY_CYCLE = MAX_DUTY_CYCLE*3/4;
   public:
-    DRV8871(){
+    DRV8871(Endstops* endstops){
+      Serial.print("init DRV8871. DEBUG=");
+      #ifdef DRV8871_DEBUG
+        Serial.println("yes");
+        Serial.print("DRV8871 : MIN_DUTY_CYCLE, MAX_DUTY_CYCLE");
+        Serial.print(MIN_DUTY_CYCLE);
+        Serial.print(", ");
+        Serial.println(MAX_DUTY_CYCLE);
+      #else
+        Serial.println("no");
+      #endif
+      this->endstops = endstops;
       // IN1
       ledcSetup(DRV8871_PWMCHANNEL1, DRV8871_PWMFREQ, DRV8871_PWMRESOLUTION);
       ledcAttachPin(DRV8871_IN1, DRV8871_PWMCHANNEL1);
       // IN2
       ledcSetup(DRV8871_PWMCHANNEL2, DRV8871_PWMFREQ, DRV8871_PWMRESOLUTION);
       ledcAttachPin(DRV8871_IN2, DRV8871_PWMCHANNEL2);
-      // init current sensor
-      current  = new ACS712();
+      // init end stops
    }
 
-    void loop(){
-      checkEndStop();
-    }
+   void debug(int dir){
+      #ifdef DRV8871_DEBUG
+        if(dir!=0){
+          Serial.print("DRV8871 : ");
+          Serial.println(dir<0?"-":(dir>0?"+":"0"));
+        }
+      #endif
+   }
 
     void left(){
       return doMove(-1);
@@ -91,5 +86,4 @@ class DRV8871 {
     void stop(){
       return doMove(0);
     }
-
 };
